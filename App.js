@@ -1,10 +1,30 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useCallback } from "react";
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, View } from "react-native";
+import Heading from "./src/components/heading/Heading";
+import { useFonts } from "expo-font";
+import Tasks from "./src/components/tasks/Tasks";
 
 export default function App() {
+
+  let [fontsLoaded] = useFonts({
+    Poppins: require("./assets/fonts/Poppins-Light.ttf"),
+    "Roboto-Bold": require("./assets/fonts/Roboto-Bold.ttf"),
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+      <Heading />
+      <Tasks />
       <StatusBar style="auto" />
     </View>
   );
@@ -13,8 +33,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#f6f6fe",
+    fontFamily: "Poppins",
   },
 });
