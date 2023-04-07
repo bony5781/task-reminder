@@ -1,21 +1,71 @@
-import { useContext, useState } from "react";
-import {
-  Modal,
-  View,
-  Text,
-  Alert,
-  Pressable,
-  TextInput,
-  KeyboardAvoidingView,
-  TouchableHighlight,
-} from "react-native";
-import { Visible } from "../components/heading/Heading";
+import { useContext, useEffect, useState } from "react";
+import { Modal, View, Text, Alert, Pressable, TextInput } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import styles from "./addTaskStyles.js";
+import { Context } from "../context/HeadingContext.js";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 export default function AddTask() {
-  const { modalVisible, setModalVisible } = useContext(Visible);
-  const [selectedDay, setSelectedDay] = useState();
+  const { modalVisible, setModalVisible, tasks, setTasks, selectedDay } = useContext(Context);
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+
+  const storeData = async (data) => {
+    try {
+      let fullData = await AsyncStorage.getItem("@DATA");
+      fullData = JSON.parse(fullData);
+      if (fullData !== null) {
+        fullData.map((task) => {
+          if (task.day === selectedDay) {
+            task.items.push(data);
+          }
+        })
+        setTasks(fullData);
+        await AsyncStorage.setItem("@DATA", JSON.stringify(fullData));
+      } else {
+        tasks.map((task) => {
+          if (task.day === selectedDay) {
+            task.items.push(data);
+            setTasks(tasks);
+          }
+        })
+        await AsyncStorage.setItem("@DATA", JSON.stringify(tasks));
+      }
+    } catch (e) {
+      // console.log(e);
+    }
+  };
+
+  const getItem = async () => {
+    try {
+      let fullData = await AsyncStorage.getItem("@DATA");
+      fullData = JSON.parse(fullData)
+      if (fullData !== null) {
+        setTasks(fullData);
+      } else {
+        setTasks(tasks)
+      }
+    } catch (e) {
+      // saving error
+    }
+  }
+
+  useEffect(()=> {
+    getItem()
+    console.log("Hi")
+  },[])
+
+  const onSubmitHandler = () => {
+    const data = {
+      id: Math.floor(Math.random() * 1000000),
+      title: title,
+      description: description,
+    };
+    storeData(data);
+    setModalVisible(!modalVisible);
+  };
 
   return (
     <View style={styles.modalContainer}>
@@ -38,9 +88,7 @@ export default function AddTask() {
               <Picker
                 style={styles.picker}
                 selectedValue={selectedDay}
-                onValueChange={(itemValue, itemIndex) =>
-                  setSelectedLanguage(itemValue)
-                }
+                onValueChange={(itemValue) => setSelectedDay(itemValue)}
               >
                 <Picker.Item label="Monday" value="Monday" />
                 <Picker.Item label="Tuesday" value="Tuesday" />
@@ -57,7 +105,8 @@ export default function AddTask() {
             <TextInput
               style={styles.modalTitleInput}
               placeholder="Task Title"
-              // onChangeText
+              value={title}
+              onChangeText={(value) => setTitle(value)}
             />
           </View>
           <View style={styles.modalDescription}>
@@ -66,7 +115,8 @@ export default function AddTask() {
               multiline
               style={styles.modalDescriptionInput}
               placeholder="Task Description"
-              // onChangeText
+              value={description}
+              onChangeText={(value) => setDescription(value)}
             />
           </View>
           <View style={styles.alarm}>
@@ -78,16 +128,16 @@ export default function AddTask() {
                 style={[styles.button, styles.buttonClose]}
                 onPress={() => setModalVisible(!modalVisible)}
               >
-                <Text style={{color: '#fff'}}>Cancel</Text>
+                <Text style={{ color: "#fff" }}>Cancel</Text>
               </Pressable>
             </View>
             <View style={styles.submit}>
-              <TouchableHighlight
+              <Pressable
                 style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}
+                onPress={onSubmitHandler}
               >
-                <Text style={{color: '#fff'}}>Submit</Text>
-              </TouchableHighlight>
+                <Text style={{ color: "#fff" }}>Submit</Text>
+              </Pressable>
             </View>
           </View>
         </View>

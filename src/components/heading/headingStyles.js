@@ -4,7 +4,7 @@ import config from "../../config.js";
 
 export default StyleSheet.create({
   headingContainer: {
-    flex: 1,
+    flex: 1.3,
     justifyContent: "space-evenly",
     marginTop: Constants.statusBarHeight,
   },
@@ -38,6 +38,12 @@ export default StyleSheet.create({
   headingItem3 : {
     flex : 0.2,
     justifyContent: 'center',
+    // backgroundColor: "yellow"
+  },
+  headingItem4 : {
+    flex : 0.2,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
     // backgroundColor: "yellow"
   },
   headingTitle: {

@@ -1,14 +1,15 @@
-import { useCallback } from "react";
+import { useCallback} from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View } from "react-native";
 import Heading from "./src/components/heading/Heading";
 import { useFonts } from "expo-font";
 import Tasks from "./src/components/tasks/Tasks";
+import { ContextProvider } from "./src/context/HeadingContext";
 
 export default function App() {
 
   let [fontsLoaded] = useFonts({
-    Poppins: require("./assets/fonts/Poppins-Light.ttf"),
+    "Poppins": require("./assets/fonts/Poppins-Light.ttf"),
     "Roboto-Bold": require("./assets/fonts/Roboto-Bold.ttf"),
   });
 
@@ -21,12 +22,15 @@ export default function App() {
   if (!fontsLoaded) {
     return null;
   }
+
   return (
-    <View style={styles.container}>
-      <Heading />
-      <Tasks />
-      <StatusBar style="auto" />
-    </View>
+    <ContextProvider>
+      <View style={styles.container}>
+        <Heading />
+        <Tasks />
+        <StatusBar style="auto" />
+      </View>
+    </ContextProvider>
   );
 }
 
